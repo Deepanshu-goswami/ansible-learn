@@ -1,16 +1,5 @@
 ---
-- name: Ensure web server is installed
+- name: Apply the Apache role
   hosts: myservers
-  become: yes
-  tasks:
-    - name: Install Apache
-      apt:
-        name: apache2
-        state: present
-
-    - name: Ensure Apache is running
-      service:
-        name: apache2
-        state: started
-        enabled: true
-
+  roles:
+    - apache_role
