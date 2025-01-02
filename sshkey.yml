@@ -1,0 +1,42 @@
+---
+- name: Generate SSH key and save to controller
+  hosts: myservers
+  tasks:
+    - name: Ensure SSH key directory exists
+      file:
+        path: ~/.ssh
+        state: directory
+        mode: '0700'
+
+    - name: Generate SSH key pair
+      command: ssh-keygen -t rsa -b 4096 -C "{{ ansible_user }}@{{ ansible_host }}" -f /tmp/id_rsa -N ''
+      args:
+        creates: /tmp/id_rsa
+
+    - name: Fetch the public key
+      fetch:
+        src: /tmp/id_rsa.pub
+        dest: ./keys/
+        flat: yes
+
+    - name: Ensure keys directory exists
+      local_action:
+        module: file
+        path: ./keys
+        state: directory
+
+    - name: Ensure output file exists
+      local_action:
+        module: command
+        args:
+          cmd: touch ./keys/output_file.txt
+
+    - name: Copy public key to output file
+      local_action:
+        module: shell
+        args:
+          cmd: cat ./keys/id_rsa.pub >> ./keys/output_file.txt
+
+    - name: Clean up generated SSH keys from managed node
+      command: rm -f /tmp/id_rsa /tmp/id_rsa.pub
+

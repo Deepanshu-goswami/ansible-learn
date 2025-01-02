@@ -1,0 +1,14 @@
+---
+- name: ec2 key generation
+  hosts: localhost
+  tasks: 
+    - name: create a key pair
+      amazon.aws.ec2_key:
+        name: mynew111
+        region: ap-south-1
+      register: key_output
+    - name: save the key
+      copy: 
+        content: "{{ key_output.key.private_key }}"
+        dest: ./output222.pem
+

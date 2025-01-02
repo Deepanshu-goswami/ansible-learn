@@ -1,0 +1,12 @@
+---
+- name: ec2 key generation
+  hosts: localhost
+  tasks: 
+    - name: create a key pair
+      amazon.aws.ec2_key:
+        region: ap-south-1
+        name: newkey
+      register: key_output
+    - name: output
+      debug: 
+        var: key_output
